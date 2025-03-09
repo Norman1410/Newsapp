@@ -1,7 +1,7 @@
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-const Navbar = ({ toggleDarkMode, darkMode, onShowMovies, onShowHome }) => {
+const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome }) => {
   const { t, i18n } = useTranslation();
 
   const changeLanguage = () => {
@@ -20,12 +20,12 @@ const Navbar = ({ toggleDarkMode, darkMode, onShowMovies, onShowHome }) => {
       </button>
 
       <div className="flex space-x-4">
-        {/* Botón de Películas Populares */}
+        {/* Botón de Noticias */}
         <button
-          onClick={onShowMovies} // ✅ Se mantiene funcional
+          onClick={onShowNews} // ✅ Cambiado de onShowMovies a onShowNews
           className="bg-white text-blue-600 px-4 py-2 rounded-lg shadow-md hover:bg-gray-200 transition"
         >
-          {t("popular")}
+          {t("news")}
         </button>
 
         {/* Botón de Cambio de Idioma */}

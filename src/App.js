@@ -1,25 +1,25 @@
 import { useState } from "react";
 import Navbar from "./Components/Navbar";
-import Movies from "./Components/Movies";
+import News from "./Components/News"; // Reemplazamos Movies por News
 import Home from "./Components/Home";
 
 const App = () => {
-  const [showMovies, setShowMovies] = useState(false);
+  const [showNews, setShowNews] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Alternar modo oscuro pantalla
+  // Alternar modo oscuro
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
 
-  // Mostrar pantalla de películas
-  const onShowMovies = () => {
-    setShowMovies(true);
+  // Mostrar pantalla de noticias
+  const onShowNews = () => {
+    setShowNews(true);
   };
 
   // Volver a la pantalla principal
   const onShowHome = () => {
-    setShowMovies(false);
+    setShowNews(false);
   };
 
   return (
@@ -27,11 +27,11 @@ const App = () => {
       <Navbar
         toggleDarkMode={toggleDarkMode}
         darkMode={darkMode}
-        onShowMovies={onShowMovies}
+        onShowNews={onShowNews} // Cambiado de onShowMovies a onShowNews
         onShowHome={onShowHome}
       />
       <div className="p-6">
-        {showMovies ? <Movies /> : <Home />}
+        {showNews ? <News /> : <Home />} {/* Cambiado Movies por News */}
       </div>
     </div>
   );

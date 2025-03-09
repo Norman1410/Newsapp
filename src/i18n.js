@@ -1,20 +1,16 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-
-// Importamos los archivos de traducción
-import esTranslations from "./Locales/es.json";
-import enTranslations from "./Locales/en.json";
+import enTranslation from "./Locales/en.json";
+import esTranslation from "./Locales/es.json";
 
 i18n.use(initReactI18next).init({
   resources: {
-    es: { translation: esTranslations },
-    en: { translation: enTranslations },
+    en: { translation: enTranslation },
+    es: { translation: esTranslation },
   },
-  lng: "es", // Idioma por defecto (puede ser "en" si prefieres)
-  fallbackLng: "es", // Si no encuentra una traducción, usa español
-  interpolation: {
-    escapeValue: false, // Evita problemas con caracteres especiales
-  },
+  lng: "es", // Idioma por defecto
+  fallbackLng: "en",
+  interpolation: { escapeValue: false },
 });
 
 export default i18n;

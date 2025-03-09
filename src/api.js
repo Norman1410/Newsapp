@@ -1,14 +1,14 @@
-const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-const BASE_URL = "https://api.themoviedb.org/3";
+const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
+const BASE_URL = "https://newsapi.org/v2";
 
-// Función para obtener las películas populares
-export const getPopularMovies = async () => {
+// Función para obtener las noticias más recientes
+export const getNews = async () => {
     try {
-        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=es-ES&page=1`);
+        const response = await fetch(`${BASE_URL}/top-headlines?country=us&apiKey=${API_KEY}`);
         const data = await response.json();
-        console.log("Películas populares:", data);
-        return data.results;
+        console.log("Noticias obtenidas:", data);
+        return data.articles; // NewsAPI devuelve un array en `articles`
     } catch (error) {
-        console.error("Error obteniendo películas populares:", error);
+        console.error("Error obteniendo noticias:", error);
     }
 };

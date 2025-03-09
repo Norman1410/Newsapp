@@ -7,7 +7,7 @@ const App = () => {
   const [showMovies, setShowMovies] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Alternar modo oscuro
+  // Alternar modo oscuro pantalla
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };

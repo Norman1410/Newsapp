@@ -5,9 +5,12 @@ const News = () => {
   const [news, setNews] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
 
+  const defaultImage = "/default-news-image.jpg"; // Imagen por defecto (debe estar en `public/`)
+
   useEffect(() => {
     const fetchNews = async () => {
       const articles = await getNews();
+      console.log("Noticias obtenidas:", articles); // 🔍 Ver qué datos llegan
       setNews(articles);
     };
     fetchNews();
@@ -25,12 +28,21 @@ const News = () => {
               selectedNews === index ? "bg-gray-200 dark:bg-gray-700" : ""
             }`}
           >
-            {article.urlToImage && (
-              <img src={article.urlToImage} alt={article.title} className="w-full rounded" />
-            )}
+            {/* Imagen de la noticia o imagen por defecto */}
+            <img
+              src={article.urlToImage?.trim() ? article.urlToImage : defaultImage}
+              alt={article.urlToImage ? article.title : "Imagen por defecto"}
+              className="w-full h-40 object-cover rounded bg-gray-300"
+            />
+
+            {/* Título de la noticia */}
             <h2 className="text-lg font-semibold mt-2">{article.title}</h2>
+
+            {/* Descripción solo si la noticia está expandida */}
             {selectedNews === index && (
-              <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">{article.description}</p>
+              <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
+                {article.description?.trim() ? article.description : "No hay descripción disponible."}
+              </p>
             )}
           </div>
         ))}

@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Navbar from "./Components/Navbar";
+import Movies from "./Components/Movies";
+import Home from "./Components/Home";
 
-function App() {
+const App = () => {
+  const [showMovies, setShowMovies] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Alternar modo oscuro
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  // Mostrar pantalla de películas
+  const onShowMovies = () => {
+    setShowMovies(true);
+  };
+
+  // Volver a la pantalla principal
+  const onShowHome = () => {
+    setShowMovies(false);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"} min-h-screen`}>
+      <Navbar
+        toggleDarkMode={toggleDarkMode}
+        darkMode={darkMode}
+        onShowMovies={onShowMovies}
+        onShowHome={onShowHome}
+      />
+      <div className="p-6">
+        {showMovies ? <Movies /> : <Home />}
+      </div>
     </div>
   );
-}
+};
 
 export default App;

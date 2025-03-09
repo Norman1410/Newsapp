@@ -1,31 +1,37 @@
-import i18n from "./i18n"; // Importamos i18n para detectar el idioma actual
+import he from "he";
 
 const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
 
-export const getNews = async () => {
-    try {
-        const language = i18n.language === "es" ? "es" : "en"; // Detecta el idioma seleccionado
-        let url = `${BASE_URL}/top-headlines?pageSize=50&apiKey=${API_KEY}`;
+// Función para limpiar y decodificar caracteres especiales
+const cleanText = (text) => {
+  if (!text) return "Sin información disponible"; // Evita valores nulos
+  return he.decode(text.normalize("NFD").replace(/[\u0300-\u036f]/g, "")); // Decodifica y normaliza
+};
 
-        if (language === "es") {
-            // Fuentes en español
-            url = `${BASE_URL}/top-headlines?sources=el-mundo,infobae,cnn-es&pageSize=50&apiKey=${API_KEY}`;
-        } else {
-            // Fuentes en inglés
-            url = `${BASE_URL}/top-headlines?sources=bbc-news,cnn&pageSize=50&apiKey=${API_KEY}`;
-        }
+// Función para obtener noticias en el idioma seleccionado
+export const getNews = async (language = "en") => {
+  try {
+    let url = `${BASE_URL}/top-headlines?pageSize=50&apiKey=${API_KEY}`;
 
-        console.log("🔍 URL solicitada:", url);
-        
-        const response = await fetch(url);
-        const data = await response.json();
-
-        console.log(`📰 Noticias en ${language}:`, data);
-
-        return data.articles || []; // Devuelve un array vacío si no hay noticias
-    } catch (error) {
-        console.error("❌ Error obteniendo noticias:", error);
-        return [];
+    if (language === "es") {
+      url += "&sources=el-mundo,infobae,cnn-es";
+    } else {
+      url += "&sources=bbc-news,cnn";
     }
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!data.articles) return [];
+
+    return data.articles.map((article) => ({
+      ...article,
+      title: cleanText(article.title),
+      description: cleanText(article.description),
+    }));
+  } catch (error) {
+    console.error("Error obteniendo noticias:", error);
+    return [];
+  }
 };

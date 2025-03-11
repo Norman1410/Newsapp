@@ -38,14 +38,24 @@ export const getNews = async (language) => {
         const jsonData = await response.json();
         console.log("Noticias obtenidas antes de limpiar:", jsonData);
 
-        // Aplicar limpieza de caracteres en títulos y descripciones antes de devolverlos
-        const articles = jsonData.articles?.map(article => ({
+        // Obtener la fecha actual y calcular el rango permitido (últimos 30 días)
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        // Filtrar noticias que sean de los últimos 30 días
+        const articles = jsonData.articles?.filter(article => {
+            if (!article.publishedAt) return false; // Omitir si no tiene fecha
+
+            const articleDate = new Date(article.publishedAt);
+            return articleDate >= thirtyDaysAgo; // Solo aceptar noticias recientes
+        }).map(article => ({
             ...article,
             title: cleanText(article.title),
             description: cleanText(article.description)
         })) || [];
 
-        console.log("Noticias después de limpiar en API:", articles);
+        console.log("Noticias después de filtrar:", articles);
         return articles;
     } catch (error) {
         console.error("Error obteniendo noticias:", error);

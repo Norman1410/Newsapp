@@ -1,37 +1,54 @@
-import he from "he";
+import he from 'he';
 
 const API_KEY = process.env.REACT_APP_NEWS_API_KEY;
-const BASE_URL = "https://newsapi.org/v2";
+const BASE_URL = "https://newsapi.org/v2/top-headlines";
 
-// Función para limpiar y decodificar caracteres especiales
+// Función para limpiar caracteres corruptos y restaurar tildes
 const cleanText = (text) => {
-  if (!text) return "Sin información disponible"; // Evita valores nulos
-  return he.decode(text.normalize("NFD").replace(/[\u0300-\u036f]/g, "")); // Decodifica y normaliza
+    if (!text) return "";
+
+    return he.decode(
+        text.replace(/ï¿œ/g, '')  // Elimina caracteres desconocidos
+            .replace(/Ã¡/g, 'á').replace(/Ã©/g, 'é').replace(/Ã­/g, 'í')
+            .replace(/Ã³/g, 'ó').replace(/Ãº/g, 'ú').replace(/Ã±/g, 'ñ')
+            .replace(/â€œ/g, '“').replace(/â€/g, '”') // Comillas especiales
+            .replace(/â€“/g, '–').replace(/â€”/g, '—') // Guiones largos
+    );
 };
 
-// Función para obtener noticias en el idioma seleccionado
-export const getNews = async (language = "en") => {
-  try {
-    let url = `${BASE_URL}/top-headlines?pageSize=50&apiKey=${API_KEY}`;
+// Función para obtener noticias según el idioma
+export const getNews = async (language) => {
+    try {
+        const sources = language === "es"
+            ? "el-mundo,infobae,cnn-es"
+            : "bbc-news,cnn";
 
-    if (language === "es") {
-      url += "&sources=el-mundo,infobae,cnn-es";
-    } else {
-      url += "&sources=bbc-news,cnn";
+        const url = `${BASE_URL}?sources=${sources}&pageSize=50&apiKey=${API_KEY}`;
+        console.log("URL solicitada:", url);
+
+        const response = await fetch(url, {
+            headers: {
+                "Accept": "application/json",
+                "Accept-Charset": "utf-8"
+            }
+        });
+
+        if (!response.ok) throw new Error("Error en la respuesta de la API");
+
+        const jsonData = await response.json();
+        console.log("Noticias obtenidas antes de limpiar:", jsonData);
+
+        // Aplicar limpieza de caracteres en títulos y descripciones antes de devolverlos
+        const articles = jsonData.articles?.map(article => ({
+            ...article,
+            title: cleanText(article.title),
+            description: cleanText(article.description)
+        })) || [];
+
+        console.log("Noticias después de limpiar en API:", articles);
+        return articles;
+    } catch (error) {
+        console.error("Error obteniendo noticias:", error);
+        return [];
     }
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (!data.articles) return [];
-
-    return data.articles.map((article) => ({
-      ...article,
-      title: cleanText(article.title),
-      description: cleanText(article.description),
-    }));
-  } catch (error) {
-    console.error("Error obteniendo noticias:", error);
-    return [];
-  }
 };

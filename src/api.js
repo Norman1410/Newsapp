@@ -63,27 +63,67 @@ export const getNews = async (language) => {
     }
 };
 
+
+const MAX_YEARS = 2; // Solo buscar en los últimos 2 años
+const MAX_MONTHS = 6; // Solo buscar en 6 meses aleatorios
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 export const getNewsToday = async (language) => {
     try {
+        if (!API_KEY) {
+            console.error("❌ API_KEY no definida");
+            return [];
+        }
+
         const sources = language === "es"
             ? "el-mundo,infobae,cnn-es"
             : "bbc-news,cnn";
 
         const today = new Date();
-        const todayDate = today.getDate(); // Obtener el día actual
+        const day = String(today.getDate()).padStart(2, "0");
 
-        // Generar un mes y año aleatorio dentro de los últimos 3 años
-        const randomYear = Math.floor(Math.random() * 3) + (today.getFullYear() - 3);
-        const randomMonth = Math.floor(Math.random() * 12) + 1; // Mes entre 1 y 12
+        let articles = [];
 
-        // Crear la fecha aleatoria en formato YYYY-MM-DD
-        const fromDate = `${randomYear}-${String(randomMonth).padStart(2, "0")}-${String(todayDate).padStart(2, "0")}`;
-        const toDate = fromDate; // Buscar solo ese día específico en el mes y año aleatorio
+        for (let i = 1; i <= MAX_YEARS; i++) {
+            const randomYear = today.getFullYear() - i;
+            for (let j = 0; j < MAX_MONTHS; j++) {
+                const randomMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, "0");
+                const date = `${randomYear}-${randomMonth}-${day}`;
 
-        // Construcción de la URL con el nuevo rango de fechas
-        const url = `${BASE_URL}?sources=${sources}&from=${fromDate}&to=${toDate}&pageSize=50&apiKey=${API_KEY}`;
+                const url = `${BASE_URL}?language=${language}&from=${date}&to=${date}&pageSize=10&apiKey=${API_KEY}`;
+                console.log("📡 Solicitando noticias de:", date);
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Error ${response.status}`);
+
+                    const jsonData = await response.json();
+                    articles = articles.concat(jsonData.articles || []);
+                } catch (error) {
+                    console.error(`❌ Error en la llamada para ${date}:`, error);
+                }
+
+                await delay(1000); // Pausa entre llamadas
+            }
+        }
+
+        console.log("📰 Noticias encontradas:", articles.length);
+        return articles;
+    } catch (error) {
+        console.error("❌ Error obteniendo noticias:", error);
+        return [];
+    }
+};
+
+
+
+
+//General Negocio Deportes etc
+export const getNewsByCategory = async (language,category) => {
+    try {
+
+        const url = `${BASE_URL}?category=${category}&pageSize=50&apiKey=${API_KEY}`;
+
         console.log("URL solicitada:", url);
-
         const response = await fetch(url, {
             headers: {
                 "Accept": "application/json",
@@ -94,72 +134,29 @@ export const getNewsToday = async (language) => {
         if (!response.ok) throw new Error("Error en la respuesta de la API");
 
         const jsonData = await response.json();
-        if (!jsonData.articles) return [];
+        console.log("Noticias obtenidas antes de limpiar:", jsonData);
 
-        console.log("Noticias obtenidas:", jsonData);
+        // Obtener la fecha actual y calcular el rango permitido (últimos 30 días)
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
 
-        const articles = jsonData.articles.map(article => ({
+        // Filtrar noticias que sean de los últimos 30 días
+        const articles = jsonData.articles?.filter(article => {
+            if (!article.publishedAt) return false; // Omitir si no tiene fecha
+
+            const articleDate = new Date(article.publishedAt);
+            return articleDate >= thirtyDaysAgo; // Solo aceptar noticias recientes
+        }).map(article => ({
             ...article,
-            title: cleanText?.(article.title) || article.title,
-            description: cleanText?.(article.description) || article.description,
-        }));
+            title: cleanText(article.title),
+            description: cleanText(article.description)
+        })) || [];
 
-        console.log("Noticias después de limpiar texto:", articles);
+        console.log("Noticias después de filtrar:", articles);
         return articles;
     } catch (error) {
         console.error("Error obteniendo noticias:", error);
-        return [];
-    }
-};
-
-const getNewsByKeyword = async (keyword, language) => {
-    try {
-        const sources = language === "es" ? "el-mundo,infobae,cnn-es" : "bbc-news,cnn";
-        const url = `${BASE_URL}?sources=${sources}&q=${encodeURIComponent(keyword)}&pageSize=50&apiKey=${API_KEY}`;
-        
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la respuesta de la API");
-
-        const jsonData = await response.json();
-        return jsonData.articles || [];
-    } catch (error) {
-        console.error("Error obteniendo noticias:", error);
-        return [];
-    }
-};
-//ejemplo mx us br etc
-export const getNewsByCountry = async (countryCode) => {
-    try {
-        // Construcción de la URL con el código de país
-        const url = `${BASE_URL}?country=${countryCode}&pageSize=50&apiKey=${API_KEY}`;
-
-        console.log("URL solicitada:", url);
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la respuesta de la API");
-
-        const jsonData = await response.json();
-        return jsonData.articles || [];
-    } catch (error) {
-        console.error("Error obteniendo noticias", error);
-        return [];
-    }
-};
-
-//General Negocio Deportes etc
-export const getNewsByCategory = async (category) => {
-    try {
-        const url = `${BASE_URL}?category=${category}&pageSize=50&apiKey=${API_KEY}`;
-
-        console.log("URL solicitada:", url);
-
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Error en la respuesta de la API");
-
-        const jsonData = await response.json();
-        return jsonData.articles || [];
-    } catch (error) {
-        console.error("Error obteniendo noticias por categoría:", error);
         return [];
     }
 };

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { auth } from "../firebase"; 
 import { signOut } from "firebase/auth"; 
 
-const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user }) => {
+const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user, onShowToday, onShowSports }) => {
   const { t, i18n } = useTranslation();
 
   const changeLanguage = () => {
@@ -40,6 +40,24 @@ const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user }) => {
           {t("news")}
         </button>
 
+        {/* Botón de Noticias */}
+        <button
+          onClick={onShowToday}
+          className={`px-4 py-2 rounded-lg shadow-md border-2 transition 
+            ${darkMode ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" : "bg-white text-blue-600 border-blue-600 hover:bg-blue-100"}`}
+        >
+          {t("Today")}
+        </button>
+
+        {/* Botón de Noticias */}
+        <button
+          onClick={onShowSports}
+          className={`px-4 py-2 rounded-lg shadow-md border-2 transition 
+            ${darkMode ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" : "bg-white text-blue-600 border-blue-600 hover:bg-blue-100"}`}
+        >
+          {t("Sports")}
+        </button>
+
         {/* Botón de Cambio de Idioma */}
         <button
           onClick={changeLanguage}
@@ -58,6 +76,8 @@ const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user }) => {
           {darkMode ? <FaSun className="mr-2" /> : <FaMoon className="mr-2" />}
           {darkMode ? t("light_mode") : t("dark_mode")}
         </button>
+
+
 
         {/* Botón de Cerrar Sesión (solo si el usuario está autenticado) */}
         {user && (

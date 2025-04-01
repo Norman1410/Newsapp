@@ -7,6 +7,7 @@ import Today from "./Components/Today";
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth"; 
 import Sports from "./Components/Sports";
+import Business from "./Components/Business";
 
 const App = () => {
   const [showNews, setShowNews] = useState(false);
@@ -16,6 +17,7 @@ const App = () => {
   const [showToday, setShowToday] = useState(false);
   const [newsResults, setNewsResults] = useState([]); // Estado para almacenar las noticias (de la barra de busqueda)
   const [showSports, setShowSports] = useState(false);
+  const [showHealth, setShowHealth] = useState(false);
   // Detectar si el usuario está autenticado al cargar la app
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -44,10 +46,14 @@ const App = () => {
     setShowNews(false);
     setShowToday(false);
     setShowSports(false);
+    setShowHealth(false);
   };
 
   const onShowToday = () => {
     if (user) {
+      setShowNews(false);
+      setShowSports(false);
+      setShowHealth(false);
       setShowToday(true);
     } else {
       alert("Debes iniciar sesión para ver las noticias");
@@ -56,7 +62,21 @@ const App = () => {
 
   const onShowSports = () => {
     if (user) {
+      setShowNews(false);
+      setShowToday(false);
+      setShowHealth(false);
       setShowSports(true);
+    } else {
+      alert("Debes iniciar sesión para ver las noticias");
+    }
+  };
+
+  const onShowHealth = () => {
+    if (user) {
+      setShowNews(false);
+      setShowToday(false);
+      setShowSports(false);
+      setShowHealth(true);
     } else {
       alert("Debes iniciar sesión para ver las noticias");
     }
@@ -99,6 +119,7 @@ const handleSearch = async (query, country) => {
         user={user} 
         onShowToday={onShowToday}
         onShowSports={onShowSports}
+        onShowHealth={onShowHealth}
       />
       <div className="p-6">
         {/* Pantalla de carga mientras Firebase verifica la sesión */}
@@ -112,6 +133,8 @@ const handleSearch = async (query, country) => {
           <Today darkMode={darkMode} />
         ) : showSports ? (
           <Sports darkMode={darkMode} />
+        ) : showHealth ? (
+          <Business darkMode={darkMode} />
         ) : (
           <Home handleSearch={handleSearch} newsResults={newsResults} />
         )}

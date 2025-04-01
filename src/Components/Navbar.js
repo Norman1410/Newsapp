@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { auth } from "../firebase"; 
 import { signOut } from "firebase/auth"; 
 
-const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user, onShowToday, onShowSports }) => {
+const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user, onShowToday, onShowSports, onShowHealth }) => {
   const { t, i18n } = useTranslation();
 
   const changeLanguage = () => {
@@ -46,7 +46,16 @@ const Navbar = ({ toggleDarkMode, darkMode, onShowNews, onShowHome, user, onShow
           className={`px-4 py-2 rounded-lg shadow-md border-2 transition 
             ${darkMode ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" : "bg-white text-blue-600 border-blue-600 hover:bg-blue-100"}`}
         >
-          {t("Today")}
+          {t("Entertainment")}
+        </button>
+
+        {/* Botón de Noticias */}
+        <button
+          onClick={onShowHealth}
+          className={`px-4 py-2 rounded-lg shadow-md border-2 transition 
+            ${darkMode ? "bg-gray-700 text-white border-gray-600 hover:bg-gray-600" : "bg-white text-blue-600 border-blue-600 hover:bg-blue-100"}`}
+        >
+          {t("Health")}
         </button>
 
         {/* Botón de Noticias */}

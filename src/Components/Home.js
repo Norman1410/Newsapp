@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const countries = [
+  { code: "all", name: "Todos los países", flag: "" }, // Opción para todos los países
   { code: "us", name: "USA", flag: "https://flagcdn.com/w40/us.png" },
   { code: "mx", name: "México", flag: "https://flagcdn.com/w40/mx.png" },
   { code: "br", name: "Brasil", flag: "https://flagcdn.com/w40/br.png" },
@@ -10,11 +11,10 @@ const countries = [
   { code: "de", name: "Alemania", flag: "https://flagcdn.com/w40/de.png" },
 ];
 
-const Home = ({ handleSearch, newsResults }) => {
+const Home = ({ darkMode, handleSearch, newsResults }) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-  const [darkMode, setDarkMode] = useState(false); // Agregado para el modo oscuro
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]); // Default to "Todos los países"
   const [selectedNews, setSelectedNews] = useState(null); // Estado para las noticias seleccionadas
   const defaultImage = "https://via.placeholder.com/150"; // Imagen por defecto si no hay urlToImage
 
@@ -23,13 +23,15 @@ const Home = ({ handleSearch, newsResults }) => {
       <h1 className="text-3xl font-bold mb-4">{t("news_main_screen")}</h1>
 
       {/* Barra de búsqueda */}
-      <div className="flex w-full max-w-md border rounded-lg overflow-hidden shadow-md">
+      <div className={`flex w-full max-w-md border rounded-lg overflow-hidden shadow-md ${darkMode ? "bg-gray-900 text-white" : "text-black"}`}>
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("Busqueda")}
-          className="flex-grow p-2 outline-none"
+          placeholder={t("Search")}
+          className={`flex-grow p-2 outline-none
+            ${darkMode ? "bg-gray-900 text-white" : "text-black"}`
+          }
         />
 
         {/* Select con banderas */}
@@ -41,7 +43,9 @@ const Home = ({ handleSearch, newsResults }) => {
                 countries.find((c) => c.code === e.target.value)
               )
             }
-            className="p-2 border-l pr-8 appearance-none bg-white"
+            className={`p-2 border-l pr-8 appearance-none 
+                        ${darkMode ? "bg-gray-900 text-white" : "text-black"}`
+            }
             style={{
               backgroundImage: `url(${selectedCountry.flag})`,
               backgroundSize: "20px",

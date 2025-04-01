@@ -22,7 +22,7 @@ const Sports = ({ darkMode }) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">
-        {i18n.language === "es" ? "Últimas Noticias de Deportes (ES)" : "Latest Sports News (EN)"}
+        {i18n.language === "es" ? "Últimas Noticias (ES)" : "Latest News (EN)"}
       </h1>
 
       {news.length === 0 ? (
@@ -89,5 +89,4 @@ const Sports = ({ darkMode }) => {
     </div>
   );
 };
-
 export default Sports;

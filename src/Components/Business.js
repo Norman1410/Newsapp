@@ -12,7 +12,7 @@ const Business = ({ darkMode }) => {
   useEffect(() => {
     const fetchNews = async () => {
       const language = i18n.language || "en";
-      const sportsNews = await getNewsByCategory(language, "business");
+      const sportsNews = await getNewsByCategory(language, "health");
       setNews(sportsNews);
     };
 
@@ -22,7 +22,7 @@ const Business = ({ darkMode }) => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-4">
-        {i18n.language === "es" ? "Últimas Noticias de Deportes (ES)" : "Latest Sports News (EN)"}
+        {i18n.language === "es" ? "Últimas Noticias (ES)" : "Latest News (EN)"}
       </h1>
 
       {news.length === 0 ? (

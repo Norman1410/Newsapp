@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getNewsToday } from "../api";
+import { getNewsByCategory } from "../api";
 import { useTranslation } from "react-i18next";
 import he from "he"; // Importar librería para decodificar caracteres
 
@@ -12,16 +12,17 @@ const cleanText = (text) => {
 const Today = ({ darkMode }) => { // ✅ Ahora recibe `darkMode` como prop
   const { i18n } = useTranslation();
   const [news, setNews] = useState([]);
+  const language = i18n.language || "en";
   const [selectedNews, setSelectedNews] = useState(null);
 
   const defaultImage = "/default-news-image.jpg"; // Imagen por defecto
 
   useEffect(() => {
     const fetchNews = async () => {
-      const articles = await getNewsToday(i18n.language);
+      const articles = await getNewsByCategory(language, "Entertainment");
 
       // Aplicar `cleanText()` a cada noticia antes de guardarla en el estado
-      const cleanedArticles = articles.map(article => ({
+      const cleanedArticles = articles.map((article) => ({
         ...article,
         title: cleanText(article.title),
         description: cleanText(article.description),
